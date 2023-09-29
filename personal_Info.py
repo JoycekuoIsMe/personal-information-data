@@ -5,9 +5,9 @@ from openpyxl import Workbook
 import docx
 
 class PersonInfo:
-    def __init__(self, fullName, idNum):
+    def __init__(self, fullName, id_number):
         self.fullName = fullName
-        self.idNum = idNum
+        self.id_number = id_number
 
     def get_name(self):
         return self.fullName.split(" ")
@@ -25,10 +25,10 @@ class PersonInfo:
         return ""
     
     def get_id_number(self):
-        return self.idNum.replace(',', '')
+        return self.id_number.replace(',', '')
 
     def get_gender(self):
-        id_code = self.idNum[1]
+        id_code = self.id_number[1]
         if id_code == '1':
             return "Male"
         elif id_code == '2':
@@ -64,14 +64,14 @@ class PersonInfo:
             'I': '嘉義市',
             'O': '新竹市'
         }
-        hometown_code = self.idNum[0]
-        return hometown_map.get(hometown_code, '')
+        hometownCode = self.id_number[0]
+        return hometown_map.get(hometownCode, '')
 
 
 # 開啟word文檔
 doc = docx.Document("./身分資料文件.docx")
 
-# 新的Excel工作簿和工作表
+# 新增Excel工作簿和工作表
 workbook = Workbook()
 sheet = workbook.active
 sheet.title = "個人資訊"
@@ -89,28 +89,25 @@ for paragraph in doc.paragraphs:
         continue
 
     # 創建PersonInfo object
-    person_info = PersonInfo(data[0], data[1])
+    personInfo = PersonInfo(data[0], data[1])
 
     # 獲取個人訊息
-    last_name = person_info.get_last_name()
-    first_name = person_info.get_first_name()
-    gender = person_info.get_gender()
-    hometown = person_info.get_hometown()
-    id_number = person_info.get_id_number()
+    lastName = personInfo.get_last_name()
+    firstName = personInfo.get_first_name()
+    gender = personInfo.get_gender()
+    hometown = personInfo.get_hometown()
+    idNum = personInfo.get_id_number()
 
     # 寫入Excel文件
-    sheet.append([last_name,first_name, gender, id_number, hometown])
+    sheet.append([lastName,firstName, gender,idNum , hometown])
 
 # 調整列寬
 for col in sheet.columns:
     max_length = 0
     column = col[0].column_letter
     for cell in col:
-        try:
-            if len(str(cell.value)) > max_length:
+        if len(str(cell.value)) > max_length:
                 max_length = len(cell.value)
-        except:
-            pass
     adjusted_width = (max_length + 2)
     sheet.column_dimensions[column].width = adjusted_width
 
